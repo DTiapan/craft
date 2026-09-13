@@ -51,16 +51,18 @@ Skip process skills for:
 
 Search in order:
 
-1. `~/.agents/skills/<name>/SKILL.md`
-2. `~/.cursor/skills/<name>/SKILL.md`
-3. Superpowers plugin cache (optional skills only)
+1. `.agents/skills/<name>/SKILL.md` (project-local, from `npx skills add` in project root)
+2. `~/.agents/skills/<name>/SKILL.md`
+3. `~/.cursor/skills/<name>/SKILL.md`
+4. Superpowers plugin cache (optional skills only)
 
 If missing:
 
 ```bash
+cd /path/to/your/project
 npx skills add addyosmani/agent-skills
-# Verify:
-bash skills/craft-adopt/scripts/verify-deps.sh   # from craft repo root
+ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/
+bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh
 ```
 
 ---
@@ -73,10 +75,9 @@ bash skills/craft-adopt/scripts/verify-deps.sh   # from craft repo root
 | Spec | `spec-driven-development` | Addy | DR-### for forks |
 | ADR | `documentation-and-adrs` | Addy | Link DR ↔ ADR |
 | Plan | `planning-and-task-breakdown` | Addy | AP ↔ tasks |
-| Build | `incremental-implementation` | Addy | Update AP status |
+| Build | `incremental-implementation` | Addy | Update AP status; use for plan tickets too |
 | Build (tests) | `test-driven-development` | Addy | Same session as build slice |
-| Build (ticket) | `implement` | Addy | When executing pre-written plan item |
-| Debug | `debugging-and-error-recovery` or `diagnose` | Addy | LL-### after root cause |
+| Debug | `debugging-and-error-recovery` | Addy | LL-### after root cause |
 | Verify | `constraint-driven-development` | Addy | `phases.md` evidence |
 | Review | `code-review-and-quality` | Addy | INDEX session |
 | Ship | `shipping-and-launch` | Addy | Rollback note in INDEX |

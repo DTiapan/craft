@@ -1,13 +1,15 @@
 # Craft dependency manifest — reference only, no vendored skill bodies
 # Router (using-craft) resolves skills by name from local install paths.
 
-version: "0.1.0"
+version: "0.1.1"
 
 dependencies:
   - id: addyosmani/agent-skills
     install: "npx skills add addyosmani/agent-skills"
     update: "npx skills update addyosmani/agent-skills"
+    install_note: "Run from your project root so skills land in .agents/skills/"
     local_paths:
+      - ".agents/skills"
       - "~/.agents/skills"
       - "~/.cursor/skills"
     skills:
@@ -15,14 +17,10 @@ dependencies:
       - idea-refine
       - spec-driven-development
       - documentation-and-adrs
-      - domain-modeling
-      - codebase-design
       - planning-and-task-breakdown
       - incremental-implementation
       - test-driven-development
-      - implement
       - debugging-and-error-recovery
-      - diagnose
       - code-review-and-quality
       - constraint-driven-development
       - security-and-hardening
@@ -34,6 +32,16 @@ dependencies:
       - code-simplification
       - performance-optimization
       - api-and-interface-design
+    optional_skills:
+      - implement
+      - diagnose
+      - domain-modeling
+      - codebase-design
+      - doubt-driven-development
+      - observability-and-instrumentation
+      - deprecation-and-migration
+      - browser-testing-with-devtools
+      - source-driven-development
 
   - id: cursor-superpowers
     optional: true

@@ -24,6 +24,12 @@ bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh
 
 **Update upstream:** `npx skills update addyosmani/agent-skills`
 
+**Smoke test (after install):**
+
+```bash
+bash ~/.cursor/skills/craft/scripts/smoke-test.sh
+```
+
 ## Skills (v0.1)
 
 | Skill | Purpose |
