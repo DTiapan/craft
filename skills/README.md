@@ -1,7 +1,14 @@
 # Craft skills
 
-Skills in this directory follow the [Agent Skills](https://agentskills.io) format.
+Skills follow the [Agent Skills](https://agentskills.io) format.
 
-Install individually into `~/.cursor/skills/<name>` or copy into your project's `.agents/skills/`.
+| Skill | Role |
+|-------|------|
+| `using-craft` | Phase router (reference-only) |
+| `engineering-ledger` | Project memory |
+| `craft-adopt` | Bootstrap projects |
+| `craft-promote` | Universal LL → skill |
 
-See [using-craft](../using-craft/SKILL.md) for adding new skills.
+Install: see [README](../README.md). Do not copy upstream Addy skills into this repo.
+
+See [using-craft](using-craft/SKILL.md) for adding Craft-native skills.

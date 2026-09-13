@@ -41,6 +41,12 @@ Scaffold from [templates/](templates/) if missing.
 
 ---
 
+## Phase routing
+
+For which upstream skill to load after the read loop, follow **`using-craft`** (reference-only router). Craft never copies Addy skill bodies.
+
+---
+
 ## Read loop (mandatory before non-trivial work)
 
 1. Read `INDEX.md` — current phase, last session summary, open questions.
@@ -56,7 +62,7 @@ Do not skip because "I remember the context."
 
 1. **Attack plan** — if new unit of work: add `AP-###` (goal, components, order, done-when).
 2. **Decision** — if you chose between options: append `DR-###` (see template).
-3. **Lesson** — if something failed, surprised, or generalized: append `LL-###`.
+3. **Lesson** — if something failed, surprised, or generalized: append `LL-###` with **Scope** (`project` | `universal`) and **Promotion candidate**.
 4. **Phase** — if a gate cleared: update `phases.md` status + evidence (tests, benchmark, ADR link).
 5. **INDEX** — one paragraph: what happened, what's next, blockers.
 
@@ -87,12 +93,17 @@ Full templates: [references/entry-templates.md](references/entry-templates.md)
 ```markdown
 ### LL-002 — BEIR doc_id must survive ingest
 - **Date:** 2026-09-13
+- **Status:** resolved
+- **Scope:** universal
+- **Promotion candidate:** yes
 - **Category:** correctness
 - **What happened:** 0% HitRate@5 on SciFact — hashed doc_id broke qrel match
 - **Root cause:** ingest_text hashed source_uri, not BEIR id
 - **Fix:** pass doc_id through ingest_text; relevant_sources fallback
 - **General lesson:** Benchmark labels must match indexed metadata, not convenience hashes
 ```
+
+**Scope:** `project` = stays in this repo. `universal` = candidate for `craft-promote` (see [references/promotion-criteria.md](references/promotion-criteria.md)).
 
 ### Attack plan (AP)
 
@@ -151,5 +162,7 @@ Before claiming ledger work complete:
 
 - [ ] INDEX reflects current state
 - [ ] New entries have sequential ids
+- [ ] LL entries include Scope; universal lessons mark Promotion candidate
 - [ ] Active index sections updated at top of decisions/lessons files
 - [ ] Links to commits, ADRs, or PRs where applicable
+- [ ] Phase status in `phases.md` matches evidence (tests, benchmark, CI)

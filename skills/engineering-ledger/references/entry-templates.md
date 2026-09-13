@@ -24,7 +24,9 @@ Copy blocks into the appropriate file above the `## Archive` marker.
 ```markdown
 ### LL-NNN — Title
 - **Date:** YYYY-MM-DD
-- **Status:** open | resolved
+- **Status:** open | resolved | promoted
+- **Scope:** project | universal
+- **Promotion candidate:** yes | no
 - **Category:** correctness | performance | process | tooling
 - **What happened:** Observable symptom
 - **Hypothesis:** What we thought

@@ -1,51 +1,73 @@
 # Craft
 
-Personal **Agent Skills** library for DTiapan — workflows that capture *how* software gets built, not just *what* was shipped.
+**Pluggable orchestration + memory layer** for AI-assisted development — by [DTiapan](https://github.com/DTiapan).
 
-Code is cheap. **Problem framing, component strategy, trade-offs, and lessons learned** are the durable artifacts. Craft skills encode that discipline for Cursor, Claude Code, Codex, and any [Agent Skills](https://agentskills.io)-compatible host.
+Craft routes agents to **best upstream skills** (Addy agent-skills, optional Superpowers) without copying them. It adds a running **engineering ledger**, adoption workflow, and a path to promote universal lessons into Craft-native skills.
 
-## Install
+Code is cheap. **Problem framing, trade-offs, and lessons learned** are the durable artifacts.
 
-### Cursor (project-scoped)
+## Quick install
 
 ```bash
+# 1. Implementation engine (once per machine — reference only, not vendored)
+npx skills add addyosmani/agent-skills
+
+# 2. Craft orchestration + memory
 git clone git@github.com:DTiapan/craft.git ~/.cursor/skills/craft
-# or symlink individual skills:
-ln -s ~/path/to/craft/skills/engineering-ledger ~/.cursor/skills/engineering-ledger
+ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/
+
+# 3. Verify dependencies
+bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh
+
+# 4. Per project — run craft-adopt skill or see docs/adoption.md
 ```
 
-### Cursor (this repo as skills root)
+**Update upstream:** `npx skills update addyosmani/agent-skills`
 
-Copy or submodule into a project's `.agents/skills/` or `.cursor/skills/` directory.
-
-## Skills
+## Skills (v0.1)
 
 | Skill | Purpose |
 |-------|---------|
-| [engineering-ledger](skills/engineering-ledger/SKILL.md) | Progressive thought-process ledger: phases, attack plans, decisions, lessons |
-| [using-craft](skills/using-craft/SKILL.md) | Meta-skill: when to load which Craft skill |
+| [using-craft](skills/using-craft/SKILL.md) | **Router** — phase → one upstream skill (reference-only) |
+| [engineering-ledger](skills/engineering-ledger/SKILL.md) | Running memory: phases, AP, DR, LL |
+| [craft-adopt](skills/craft-adopt/SKILL.md) | Bootstrap ledger + AGENTS.md in a project |
+| [craft-promote](skills/craft-promote/SKILL.md) | Universal LL → new Craft-native skill |
+
+## Docs
+
+| Doc | Purpose |
+|-----|---------|
+| [lifecycle-map.md](docs/lifecycle-map.md) | End-to-end phases, gates, anti-drift |
+| [landscape-audit.md](docs/landscape-audit.md) | What exists upstream; what Craft owns |
+| [adoption.md](docs/adoption.md) | Project onboarding |
+| [case-study-recall.md](docs/case-study-recall.md) | Dogfood validation on Recall |
+
+## Dependency strategy
+
+**Reference, don't copy.** [craft.manifest.yaml](craft.manifest.yaml) pins pack ids and expected skill names — not skill file bodies. When Addy updates a workflow, you run `npx skills update`; Craft router tables change only on renames/splits.
+
+## Philosophy
+
+1. **Compose best wheels** — Addy implements; Craft orchestrates + remembers.
+2. **Read before build** — ledger INDEX before non-trivial work.
+3. **Append, don't rewrite** — history is evidence.
+4. **ADRs for forks, ledger for narrative** — irreversible → ADR; tactical → DR.
+5. **Two-tier lessons** — `Scope: project` stays local; `Scope: universal` → `craft-promote`.
 
 ## Repository layout
 
 ```
 craft/
+├── craft.manifest.yaml       # Upstream dependency pins (no vendored skills)
 ├── README.md
-├── AGENTS.md                 # Agent routing for this repo
+├── AGENTS.md
 ├── skills/
-│   └── <skill-name>/
-│       ├── SKILL.md          # Required contract
-│       ├── references/       # Progressive disclosure
-│       └── templates/        # Scaffold files for target projects
+│   ├── using-craft/
+│   ├── engineering-ledger/
+│   ├── craft-adopt/
+│   └── craft-promote/
 └── docs/
-    └── adoption.md           # How to adopt in a new project
 ```
-
-## Philosophy
-
-1. **Read before build** — consult the ledger before non-trivial work.
-2. **Append, don't rewrite** — history is evidence; supersede with links.
-3. **ADRs for forks, ledger for narrative** — irreversible architecture → ADR; tactical reasoning → ledger.
-4. **Phases have gates** — no downstream work until upstream is verified green.
 
 ## License
 
