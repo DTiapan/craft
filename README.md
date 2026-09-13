@@ -69,6 +69,34 @@ craft/
 └── docs/
 ```
 
+---
+
+## Part of a three-repo stack
+
+Craft is the **workflow layer** for builders shipping real GenAI systems:
+
+| Project | Role |
+|---------|------|
+| [Recall](https://github.com/DTiapan/Recall) | Enterprise RAG kit with real BEIR benchmarks (anchor product) |
+| **Craft** (this repo) | Phase router + engineering ledger; references [Addy agent-skills](https://github.com/addyosmani/agent-skills), never copies them |
+| [Battery](https://github.com/DTiapan/battery) | Local MCP memory for rules and decisions across Cursor / Claude sessions |
+
+Dogfood: [case study on Recall](docs/case-study-recall.md).
+
+---
+
+## Author
+
+**Ajas Bakran** — AI systems engineer focused on agent evaluation, context engineering, and production reliability.
+
+- GitHub: [github.com/DTiapan](https://github.com/DTiapan)
+- LinkedIn: [linkedin.com/in/ajasbakran](https://linkedin.com/in/ajasbakran)
+- Newsletter: [growithai.substack.com](https://growithai.substack.com/)
+
+Advisory and consulting on AI agent reliability, memory architectures, MCP integrations, and production RAG — [get in touch](mailto:bakran.ajas@gmail.com).
+
+---
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
