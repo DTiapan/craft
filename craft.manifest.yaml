@@ -1,9 +1,23 @@
 # Craft dependency manifest — reference only, no vendored skill bodies
 # Router (using-craft) resolves skills by name from local install paths.
 
-version: "0.2.0"
+version: "0.2.1"
 
 profiles:
+  global:
+    name: "Global Baseline Engineering"
+    description: "Core process foundation for every project"
+    sources:
+      - addyosmani/agent-skills
+    skills:
+      - test-driven-development
+      - debugging-and-error-recovery
+      - code-review-and-quality
+      - constraint-driven-development
+      - git-workflow-and-versioning
+      - documentation-and-adrs
+      - context-engineering
+
   saas:
     name: "SaaS & Commercial Product Engine"
     description: "Skills for billing, multi-tenancy, SEO, marketing, and entitlements"
@@ -60,6 +74,34 @@ profiles:
       - frontend-ui-engineering
       - browser-testing-with-devtools
       - modern-web-guidance
+
+  marketing:
+    name: "Growth & Copywriting"
+    description: "Skills for product launch, user messaging, and conversion optimization"
+    sources:
+      - addyosmani/agent-skills
+    skills:
+      - shipping-and-launch
+      - idea-refine
+      - interview-me
+      - spec-driven-development
+
+  seo:
+    name: "SEO & Web Performance"
+    description: "Skills for technical SEO, metadata, Core Web Vitals, and search ranking"
+    sources:
+      - addyosmani/agent-skills
+      - modern-web-guidance-plugin
+    skills:
+      - performance-optimization
+      - modern-web-guidance
+      - browser-testing-with-devtools
+
+fallback:
+  auto_search_online: true
+  search_command: "npx skills add {query}"
+  git_fallback: "git clone {url} ~/.agents/skills/{name}"
+  registry_url: "https://github.com/addyosmani/agent-skills"
 
 dependencies:
   - id: addyosmani/agent-skills

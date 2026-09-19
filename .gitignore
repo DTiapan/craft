@@ -1,2 +1,5 @@
 # Ignore OS files
 .DS_Store
+.agents/
+*.log
+skills-lock.json
