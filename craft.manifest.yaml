@@ -1,7 +1,7 @@
 # Craft dependency manifest — reference only, no vendored skill bodies
 # Router (using-craft) resolves skills by name from local install paths.
 
-version: "0.2.1"
+version: "0.2.2"
 
 profiles:
   global:
@@ -33,12 +33,15 @@ profiles:
       - ui-ux-pro-max
 
   engineering:
-    name: "Core Software Engineering"
-    description: "Skills for production architecture, TDD, security, and ops"
+    name: "Core Software Engineering & System Design"
+    description: "Skills for system design, API contracts, architecture ADRs, TDD, security, and ops"
     sources:
       - addyosmani/agent-skills
     skills:
       - api-and-interface-design
+      - spec-driven-development
+      - documentation-and-adrs
+      - constraint-driven-development
       - test-driven-development
       - security-and-hardening
       - observability-and-instrumentation
@@ -47,7 +50,6 @@ profiles:
       - git-workflow-and-versioning
       - debugging-and-error-recovery
       - code-review-and-quality
-      - constraint-driven-development
       - code-simplification
       - incremental-implementation
 
