@@ -2,21 +2,35 @@
 name: craft-adopt
 description: >-
   Bootstrap Craft into a target project: scaffold engineering ledger, wire AGENTS.md,
-  verify upstream skills are installed locally. Use when starting a new project,
+  install domain skill profiles, verify upstream skills are installed locally. Use when starting a new project,
   onboarding Craft, or user says "adopt craft" / "set up the ledger".
 ---
 
 # Craft Adopt
 
-One workflow to make a project Craft-ready. **Does not copy upstream skills** — only scaffolds project artifacts and verifies local installs.
+One workflow to make a project Craft-ready. **Does not copy upstream skills** — scaffolds project artifacts, installs domain skill profiles, and verifies local installs.
+
+---
+
+## Quick Start: 1-Click Domain Skill Installer
+
+From your Craft clone, run the unified installer for any domain profile (`saas`, `engineering`, `product`, `uiux`, `all`):
+
+```bash
+# 1-Click Install for specific domain profile
+bash scripts/craft-install.sh --profile saas --project-dir /path/to/project
+
+# Or install all profiles
+bash scripts/craft-install.sh --profile all
+```
 
 ---
 
 ## When to use
 
 - New greenfield or brownfield project adopting Craft
-- User says: "adopt craft", "set up engineering ledger", "bootstrap craft"
-- After cloning Craft on a new machine (verify deps)
+- User says: "adopt craft", "set up engineering ledger", "bootstrap craft", "install craft skills"
+- After cloning Craft on a new machine (verify deps or setup domain profiles)
 
 ## When NOT to use
 
@@ -25,27 +39,33 @@ One workflow to make a project Craft-ready. **Does not copy upstream skills** �
 
 ---
 
+## Domain Skill Profiles
+
+Craft v0.2.0 organizes skills into purpose-built domain profiles:
+
+| Profile | Focus Area | Key Skills |
+|---|---|---|
+| **`saas`** | SaaS, billing, marketing, multi-tenancy | API Design, Security, Frontend, UI/UX Pro, Launch |
+| **`engineering`** | Production architecture & core dev | TDD, Security, Observability, Performance, CI/CD, Git |
+| **`product`** | 0 to 1 discovery & PRD authoring | Idea Refine, Interview Me, Spec-Driven Dev, Task Breakdown |
+| **`uiux`** | UI/UX & design systems | UI/UX Pro Max, Frontend UI, Browser DevTools, Web Guidance |
+
+---
+
 ## Workflow
 
-### 1. Verify machine dependencies
+### 1. Verify machine dependencies & install profile
 
-From craft repo root (or path to clone):
+Run the 1-click installer:
+
+```bash
+bash scripts/craft-install.sh --profile saas
+```
+
+Or verify existing dependencies:
 
 ```bash
 bash skills/craft-adopt/scripts/verify-deps.sh
-```
-
-If fail → instruct user:
-
-```bash
-npx skills add addyosmani/agent-skills
-```
-
-Optional: symlink Craft skills if not present:
-
-```bash
-git clone git@github.com:DTiapan/craft.git ~/.cursor/skills/craft
-ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/
 ```
 
 ### 2. Scaffold ledger in target project
@@ -80,7 +100,10 @@ Append (do not replace existing content):
 Create `$TARGET/craft.project.yaml`:
 
 ```yaml
-craft_version: "0.1.0"
+craft_version: "0.2.0"
+profiles:
+  - saas
+  - engineering
 ledger_path: docs/engineering-ledger
 adr_path: docs/decisions
 manifest_ref: DTiapan/craft craft.manifest.yaml
@@ -99,7 +122,7 @@ Before claiming adopt complete:
 - [ ] `docs/engineering-ledger/` has INDEX, phases, attack-plans, decisions, lessons
 - [ ] `docs/decisions/` exists (may be empty)
 - [ ] AGENTS.md mentions Craft + ledger path
-- [ ] `verify-deps.sh` passes (or user acknowledged install step)
+- [ ] `verify-deps.sh` passes (or 1-click installer executed)
 - [ ] No upstream SKILL.md files copied into project
 
 ---
@@ -108,7 +131,7 @@ Before claiming adopt complete:
 
 | Don't | Do instead |
 |-------|------------|
-| Vendor Addy skills into `.agents/skills/` in git | `npx skills add` on each machine |
+| Vendor Addy skills into `.agents/skills/` in git | Use `craft-install.sh` or `npx skills add` on each machine |
 | Replace entire AGENTS.md | Append Craft section |
 | Skip ledger on brownfield | Backfill INDEX with current phase + recent decisions |
 

@@ -1,7 +1,65 @@
 # Craft dependency manifest — reference only, no vendored skill bodies
 # Router (using-craft) resolves skills by name from local install paths.
 
-version: "0.1.1"
+version: "0.2.0"
+
+profiles:
+  saas:
+    name: "SaaS & Commercial Product Engine"
+    description: "Skills for billing, multi-tenancy, SEO, marketing, and entitlements"
+    sources:
+      - addyosmani/agent-skills
+      - nextlevelbuilder/ui-ux-pro-max-skill
+    skills:
+      - api-and-interface-design
+      - security-and-hardening
+      - frontend-ui-engineering
+      - ci-cd-and-automation
+      - shipping-and-launch
+      - ui-ux-pro-max
+
+  engineering:
+    name: "Core Software Engineering"
+    description: "Skills for production architecture, TDD, security, and ops"
+    sources:
+      - addyosmani/agent-skills
+    skills:
+      - api-and-interface-design
+      - test-driven-development
+      - security-and-hardening
+      - observability-and-instrumentation
+      - performance-optimization
+      - ci-cd-and-automation
+      - git-workflow-and-versioning
+      - debugging-and-error-recovery
+      - code-review-and-quality
+      - constraint-driven-development
+      - code-simplification
+      - incremental-implementation
+
+  product:
+    name: "Product Strategy & Discovery"
+    description: "Skills for 0 to 1 product discovery, PRDs, user interviews, and capability mapping"
+    sources:
+      - addyosmani/agent-skills
+    skills:
+      - idea-refine
+      - interview-me
+      - spec-driven-development
+      - planning-and-task-breakdown
+      - documentation-and-adrs
+
+  uiux:
+    name: "UI/UX & Frontend Excellence"
+    description: "Skills for design systems, modern web APIs, responsive UI, and accessibility"
+    sources:
+      - addyosmani/agent-skills
+      - nextlevelbuilder/ui-ux-pro-max-skill
+    skills:
+      - ui-ux-pro-max
+      - frontend-ui-engineering
+      - browser-testing-with-devtools
+      - modern-web-guidance
 
 dependencies:
   - id: addyosmani/agent-skills
