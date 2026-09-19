@@ -26,7 +26,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --help|-h)
-      echo "Craft 1-Click Skill Installer & Auto-Fetcher v0.2.1"
+      echo "Craft 1-Click Skill Installer & Auto-Fetcher v0.2.3"
       echo "Usage: bash scripts/craft-install.sh [options]"
       echo ""
       echo "Options:"
@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo "=================================================================="
-echo "Craft 1-Click Domain Skill Installer & Online Auto-Discovery v0.2.1"
+echo "Craft 1-Click Domain Skill Installer & System Design Engine v0.2.3"
 echo "Target Profile: $PROFILE"
 echo "Project Dir:    $PROJECT_DIR"
 echo "Craft Root:     $CRAFT_ROOT"
@@ -58,6 +58,16 @@ install_addy_skills() {
     echo "  [Fallback] Attempting git clone fallback for addyosmani/agent-skills..."
     mkdir -p "$PROJECT_DIR/.agents/skills"
     git clone https://github.com/addyosmani/agent-skills.git "$PROJECT_DIR/.agents/skills/addy-pack" || true
+  }
+}
+
+# Helper: Install proyecto26 System Design skill pack
+install_system_design_skills() {
+  echo "--> [Profile: System Design] Installing System Design skill pack (proyecto26/system-design-skills)..."
+  ( cd "$PROJECT_DIR" && npx --yes skills add proyecto26/system-design-skills -y ) || {
+    echo "  [Fallback] Attempting git clone fallback for proyecto26/system-design-skills..."
+    mkdir -p "$PROJECT_DIR/.agents/skills"
+    git clone https://github.com/proyecto26/system-design-skills.git "$PROJECT_DIR/.agents/skills/system-design-pack" || true
   }
 }
 
@@ -88,10 +98,12 @@ case "$PROFILE" in
     ;;
   saas)
     install_addy_skills
+    install_system_design_skills
     install_uiux_skills
     ;;
   engineering)
     install_addy_skills
+    install_system_design_skills
     ;;
   product)
     install_addy_skills
@@ -109,6 +121,7 @@ case "$PROFILE" in
     ;;
   all)
     install_addy_skills
+    install_system_design_skills
     install_uiux_skills
     ;;
   *)

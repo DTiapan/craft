@@ -1,7 +1,7 @@
 # Craft dependency manifest — reference only, no vendored skill bodies
 # Router (using-craft) resolves skills by name from local install paths.
 
-version: "0.2.2"
+version: "0.2.3"
 
 profiles:
   global:
@@ -34,24 +34,32 @@ profiles:
 
   engineering:
     name: "Core Software Engineering & System Design"
-    description: "Skills for system design, API contracts, architecture ADRs, TDD, security, and ops"
+    description: "Full system design wiki, architecture diagrams, TDD, security, and ops"
     sources:
       - addyosmani/agent-skills
+      - proyecto26/system-design-skills
     skills:
-      - api-and-interface-design
-      - spec-driven-development
-      - documentation-and-adrs
-      - constraint-driven-development
+      - system-design
+      - api-design
+      - architecture-diagram
+      - back-of-the-envelope
+      - caching
+      - consistency-coordination
+      - data-storage
+      - distributed-logging
+      - distributed-search
+      - load-balancing
+      - messaging-streaming
+      - observability
+      - requirements-scoping
+      - resilience-failure
+      - scaling-evolution
+      - service-decomposition
+      - task-scheduling
       - test-driven-development
       - security-and-hardening
-      - observability-and-instrumentation
-      - performance-optimization
       - ci-cd-and-automation
       - git-workflow-and-versioning
-      - debugging-and-error-recovery
-      - code-review-and-quality
-      - code-simplification
-      - incremental-implementation
 
   product:
     name: "Product Strategy & Discovery"
@@ -103,7 +111,7 @@ fallback:
   auto_search_online: true
   search_command: "npx skills add {query}"
   git_fallback: "git clone {url} ~/.agents/skills/{name}"
-  registry_url: "https://github.com/addyosmani/agent-skills"
+  registry_url: "https://github.com/proyecto26/system-design-skills"
 
 dependencies:
   - id: addyosmani/agent-skills
@@ -134,16 +142,33 @@ dependencies:
       - code-simplification
       - performance-optimization
       - api-and-interface-design
-    optional_skills:
-      - implement
-      - diagnose
-      - domain-modeling
-      - codebase-design
-      - doubt-driven-development
-      - observability-and-instrumentation
-      - deprecation-and-migration
-      - browser-testing-with-devtools
-      - source-driven-development
+
+  - id: proyecto26/system-design-skills
+    install: "npx skills add proyecto26/system-design-skills"
+    update: "npx skills update proyecto26/system-design-skills"
+    install_note: "Run from your project root so skills land in .agents/skills/"
+    local_paths:
+      - ".agents/skills"
+      - "~/.agents/skills"
+      - "~/.cursor/skills"
+    skills:
+      - system-design
+      - api-design
+      - architecture-diagram
+      - back-of-the-envelope
+      - caching
+      - consistency-coordination
+      - data-storage
+      - distributed-logging
+      - distributed-search
+      - load-balancing
+      - messaging-streaming
+      - observability
+      - requirements-scoping
+      - resilience-failure
+      - scaling-evolution
+      - service-decomposition
+      - task-scheduling
 
   - id: cursor-superpowers
     optional: true
