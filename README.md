@@ -1,108 +1,279 @@
 # Craft
 
-**Pluggable orchestration + memory layer** for AI-assisted development — by [DTiapan](https://github.com/DTiapan).
+**Pluggable orchestration + persistent memory layer for AI-assisted development** — by [DTiapan](https://github.com/DTiapan).
 
-Craft routes agents to **best upstream skills** (Addy agent-skills, optional Superpowers) without copying them. It adds a running **engineering ledger**, adoption workflow, and a path to promote universal lessons into Craft-native skills.
+[![Version](https://img.shields.io/badge/version-0.2.3-blue.svg)](craft.manifest.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Profiles](https://img.shields.io/badge/profiles-8%20available-purple.svg)](craft.manifest.yaml)
 
-Code is cheap. **Problem framing, trade-offs, and lessons learned** are the durable artifacts.
+Craft gives AI agents and developers a clean **lifecycle router** and **engineering ledger** without copying or vendoring upstream skills. It routes agents to the **best upstream skills** ([Addy Osmani agent-skills](https://github.com/addyosmani/agent-skills), [Proyecto26 system-design-skills](https://github.com/proyecto26/system-design-skills), [UI/UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)) and provides durable running memory for problem framing, trade-offs, and lessons learned.
 
-## Quick install
+> Code is cheap and ephemeral. **Problem framing, architectural trade-offs, and lessons learned** are the durable assets.
+
+---
+
+## What is Craft? (Mental Model)
+
+Craft is **NOT** a code library or a vendored skill dump. Think of Craft the way you think of `git`: **it initializes directly inside your project repository**. All skills reside self-contained in `.agents/skills/`, and running project memory lives in `docs/engineering-ledger/`.
+
+Craft is IDE- and platform-agnostic: it works seamlessly with **Google Antigravity**, Cursor, Claude Code, Windsurf, or terminal CLI agents without hardcoding IDE paths.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                       AI CODING AGENT                       │
+│       (Google Antigravity / Cursor / Claude Code / CLI)      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+            ┌──────────────────┴──────────────────┐
+            │                                     │
+            ▼                                     ▼
+┌───────────────────────┐             ┌───────────────────────┐
+│     ROUTER LAYER      │             │     MEMORY LAYER      │
+│     (using-craft)     │             │ (engineering-ledger)  │
+├───────────────────────┤             ├───────────────────────┤
+│ • Phase Identification│             │ • docs/engineering-  │
+│ • Single-skill route  │             │   ledger/INDEX.md     │
+│ • Anti-drift rules    │             │ • Tactical DR-###     │
+│ • No skill hoarding   │             │ • Universal LL-###    │
+└───────────┬───────────┘             └───────────────────────┘
+            │
+            ▼  (dispatches to exactly one project-local skill)
+┌─────────────────────────────────────────────────────────────┐
+│                    PROJECT-LOCAL SKILLS                     │
+│                  (<project>/.agents/skills/)                │
+│                                                             │
+│ • using-craft & ledger      (Craft-native orchestration)    │
+│ • addyosmani/agent-skills   (TDD, Spec, Debug, Refactor)    │
+│ • proyecto26/system-design  (Distributed systems, Caching) │
+│ • nextlevelbuilder/ui-ux    (Design systems, Accessibility) │
+└─────────────────────────────────────────────────────────────┘
+```
+
+| Layer | Responsibility | Components |
+|---|---|---|
+| **Router** | Maps project phase to exactly *one* best-in-class workflow | `using-craft` skill |
+| **Memory** | Preserves context, decisions, and lessons across sessions | `engineering-ledger` (`docs/engineering-ledger/`) |
+| **Implementation** | Executes the actual engineering task | Project-local skills in `.agents/skills/` (from `craft.manifest.yaml`) |
+| **Lifecycle** | Onboards target projects & promotes universal lessons | `craft-adopt`, `craft-promote` |
+
+---
+
+## ⚡ Quick Start: 1-Click Project Initializer
+
+Just like `git init`, you initialize Craft directly in your target repository. All skills reside inside `.agents/skills/` in that repository—nothing is copied to global or IDE-specific directories.
+
+### 1. Initialize Craft in Your Project
 
 ```bash
-# 1. Implementation engine (once per machine — reference only, not vendored)
-npx skills add addyosmani/agent-skills
+# Clone Craft (once on your machine)
+git clone git@github.com:DTiapan/craft.git ~/craft
 
-# 2. Craft orchestration + memory
-git clone git@github.com:DTiapan/craft.git ~/.cursor/skills/craft
-ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/
+# Initialize in your current project with ALL skills across all profiles:
+bash ~/craft/scripts/craft-install.sh --profile all
 
-# 3. Verify dependencies
-bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh
+# Or target a specific project directory:
+bash ~/craft/scripts/craft-install.sh --profile all --project-dir /path/to/your/project
 
-# 4. Per project — run craft-adopt skill or see docs/adoption.md
+# Or install a specific domain profile (e.g., engineering, saas, product, uiux):
+bash ~/craft/scripts/craft-install.sh --profile engineering --project-dir /path/to/your/project
 ```
 
-**Update upstream:** `npx skills update addyosmani/agent-skills`
+Running `craft-install.sh`:
+- Installs the chosen skill profile directly into `<project>/.agents/skills/`
+- Installs Craft-native skills (`using-craft`, `engineering-ledger`, `craft-adopt`, `craft-promote`) into `<project>/.agents/skills/`
+- Scaffolds `docs/engineering-ledger/` and `docs/decisions/` with templates
+- Creates `craft.project.yaml` and appends instructions to `AGENTS.md`
+- Verifies installation dependencies
 
-**Smoke test (after install):**
+### 2. Verify Installation
 
 ```bash
-bash ~/.cursor/skills/craft/scripts/smoke-test.sh
-```
-
-## Skills (v0.1)
-
-| Skill | Purpose |
-|-------|---------|
-| [using-craft](skills/using-craft/SKILL.md) | **Router** — phase → one upstream skill (reference-only) |
-| [engineering-ledger](skills/engineering-ledger/SKILL.md) | Running memory: phases, AP, DR, LL |
-| [craft-adopt](skills/craft-adopt/SKILL.md) | Bootstrap ledger + AGENTS.md in a project |
-| [craft-promote](skills/craft-promote/SKILL.md) | Universal LL → new Craft-native skill |
-
-## Docs
-
-| Doc | Purpose |
-|-----|---------|
-| [lifecycle-map.md](docs/lifecycle-map.md) | End-to-end phases, gates, anti-drift |
-| [landscape-audit.md](docs/landscape-audit.md) | What exists upstream; what Craft owns |
-| [adoption.md](docs/adoption.md) | Project onboarding |
-| [case-study-recall.md](docs/case-study-recall.md) | Dogfood validation on Recall |
-
-## Dependency strategy
-
-**Reference, don't copy.** [craft.manifest.yaml](craft.manifest.yaml) pins pack ids and expected skill names — not skill file bodies. When Addy updates a workflow, you run `npx skills update`; Craft router tables change only on renames/splits.
-
-## Philosophy
-
-1. **Compose best wheels** — Addy implements; Craft orchestrates + remembers.
-2. **Read before build** — ledger INDEX before non-trivial work.
-3. **Append, don't rewrite** — history is evidence.
-4. **ADRs for forks, ledger for narrative** — irreversible → ADR; tactical → DR.
-5. **Two-tier lessons** — `Scope: project` stays local; `Scope: universal` → `craft-promote`.
-
-## Repository layout
-
-```
-craft/
-├── craft.manifest.yaml       # Upstream dependency pins (no vendored skills)
-├── README.md
-├── AGENTS.md
-├── skills/
-│   ├── using-craft/
-│   ├── engineering-ledger/
-│   ├── craft-adopt/
-│   └── craft-promote/
-└── docs/
+bash ~/craft/scripts/smoke-test.sh
 ```
 
 ---
 
-## Part of a three-repo stack
+## 🤖 AI Agent & LLM Operating Guide
 
-Craft is the **workflow layer** for builders shipping real GenAI systems:
+> **MANDATORY PROTOCOL FOR AI AGENTS (Antigravity, Cursor, Claude Code, Copilot, Codex, etc.)**  
+> When operating in any repository where Craft is configured (indicated by `craft.project.yaml`, `docs/engineering-ledger/`, or Craft instructions in `AGENTS.md`), **you must follow this exact sequence:**
 
-| Project | Role |
-|---------|------|
-| [Recall](https://github.com/DTiapan/Recall) | Enterprise RAG kit with real BEIR benchmarks (anchor product) |
-| **Craft** (this repo) | Phase router + engineering ledger; references [Addy agent-skills](https://github.com/addyosmani/agent-skills), never copies them |
-| [Battery](https://github.com/DTiapan/battery) | Local MCP memory for rules and decisions across Cursor / Claude sessions |
+### 1. Session Initialization (Read Before Acting)
+- **Do not jump straight into modifying code for non-trivial tasks.**
+- Read `docs/engineering-ledger/INDEX.md` first.
+- Check `phases.md` to identify the current lifecycle phase (e.g., `Shape`, `Spec`, `Plan`, `Build`, `Debug`, `Verify`, `Review`, `Ship`).
+- Scan `decisions.md` and `lessons.md` to understand existing architectural constraints and avoid repeating known pitfalls.
 
-Dogfood: [case study on Recall](docs/case-study-recall.md).
+### 2. Phase Routing (The "One-Skill" Rule)
+- Consult the `using-craft` skill (or `.agents/skills/using-craft/SKILL.md`).
+- Match the current task to **exactly ONE primary skill** from the lifecycle table:
+  - **Shape**: `interview-me` (if underspecified) or `idea-refine`
+  - **Spec**: `spec-driven-development`
+  - **Architecture / Fork**: `documentation-and-adrs`
+  - **Plan**: `planning-and-task-breakdown`
+  - **Build**: `incremental-implementation` (and `test-driven-development`)
+  - **System Architecture**: `system-design`, `api-design`, `architecture-diagram`
+  - **Debug**: `debugging-and-error-recovery`
+  - **Verify**: `constraint-driven-development`
+  - **Review**: `code-review-and-quality`
+  - **Ship**: `shipping-and-launch`
+- **Strict Anti-Drift Rule**: Never stack or hoard multiple process skills (e.g., do *not* load `interview-me` + `spec-driven-development` + `incremental-implementation` simultaneously). Load the single skill for the current phase, complete that phase's gate, and transition.
+
+### 3. Missing Skills Recovery
+- If a skill called for by `using-craft` is not found in `.agents/skills/`:
+  ```bash
+  # Run the Craft installer with --profile all to restore all missing skills
+  bash /path/to/craft/scripts/craft-install.sh --profile all
+  ```
+  **Never guess, improvise, or hallucinate process workflows.** Run the installer to fetch the authentic upstream skill.
+
+### 4. Session Finalization (Durable Ledger Append)
+Before finishing any substantive work session:
+- **Record Tactical Decisions**: If you made a reversible design choice, append it as a `DR-###` in `docs/engineering-ledger/decisions.md`.
+- **Capture Lessons Learned**: If you encountered and resolved a tricky bug, unexpected behavior, or API quirk, append it as an `LL-###` in `docs/engineering-ledger/lessons.md`. Tag it with `Scope: project` (local) or `Scope: universal` (reusable).
+- **Update Phase Progress**: Mark completed phase gates in `docs/engineering-ledger/phases.md`.
+- **Update Ledger INDEX**: Append a session row to `docs/engineering-ledger/INDEX.md`.
+- **Irreversible Forks (ADR)**: If a decision is an irreversible, high-impact architectural fork (e.g., database choice, framework rewrite, breaking API contract), create a formal ADR in `docs/decisions/` per `documentation-and-adrs`.
+
+---
+
+## 📦 Domain Skill Profiles Matrix (v0.2.3)
+
+Craft curates upstream skills into targeted domain profiles configured in [craft.manifest.yaml](craft.manifest.yaml):
+
+| Profile | Focus Area | Included Sources & Key Skills |
+|---|---|---|
+| **`all`** | **Complete Suite** | Installs **all** skills across Addy, System Design wiki, and UI/UX Pro Max. Recommended for full-stack environments. |
+| **`engineering`** | Core Architecture & Backend | `proyecto26/system-design-skills` (System Design wiki, Caching, Consistency, Data Storage, Messaging, Distributed Search/Logging, Observability, Scaling) + `addyosmani/agent-skills` (TDD, Security, CI/CD, Git). |
+| **`saas`** | Commercial SaaS & Monetization | API Design, Multi-Tenancy, Auth Security, Frontend UI, Billing, Entitlements, UI/UX Pro Max, Shipping & Launch. |
+| **`product`** | 0-to-1 Discovery & PRDs | Idea Refine, Interview Me, Spec-Driven Development, Task Breakdown, ADRs. |
+| **`uiux`** | Design Systems & Modern Frontend | UI/UX Pro Max, Frontend UI Engineering, Browser DevTools Testing, Modern Web Guidance. |
+| **`marketing`** | Growth & Launch Messaging | Shipping & Launch, Idea Refine, User Interviewing, Spec-Driven Dev. |
+| **`seo`** | Technical SEO & Performance | Performance Optimization, Modern Web Guidance, Browser Testing with DevTools. |
+| **`global`** | Minimal Baseline Engineering | TDD, Systematic Debugging, Code Review & Quality, Constraint-Driven Dev, Git Workflow, Documentation & ADRs, Context Engineering. |
+
+### CLI Installer Reference
+
+```
+bash scripts/craft-install.sh [options]
+
+Options:
+  --profile, -p <name>    Profile to install (all, engineering, saas, product, uiux, marketing, seo, global) [default: all]
+  --project-dir, -d <dir> Target project directory [default: current working dir]
+  --fetch, -f <query>     Dynamically fetch an online skill package if missing
+  --help, -h              Show help and usage examples
+```
+
+---
+
+## 🛠️ How to Adopt Craft in Any Target Repository
+
+### Option A: Automated 1-Click Setup (Recommended)
+
+From your target project root:
+```bash
+# Initializes all skills, ledger templates, craft.project.yaml, and AGENTS.md
+bash /path/to/craft/scripts/craft-install.sh --profile all --project-dir .
+```
+
+### Option B: Manual Step-by-Step Setup
+
+1. **Install skills into `.agents/skills`:**
+   ```bash
+   mkdir -p .agents/skills
+   npx skills add addyosmani/agent-skills
+   cp -R /path/to/craft/skills/* .agents/skills/
+   ```
+
+2. **Scaffold the ledger directories:**
+   ```bash
+   mkdir -p docs/engineering-ledger docs/decisions
+   cp /path/to/craft/skills/engineering-ledger/templates/* docs/engineering-ledger/
+   ```
+
+3. **Wire your project's `AGENTS.md` (append to existing file):**
+   ```markdown
+   ## Craft (orchestration + ledger)
+   - Non-trivial work: read `docs/engineering-ledger/INDEX.md` first.
+   - Route phases via `using-craft` skill (reference-only — do not copy Addy skills into this repo).
+   - Append DR/LL/INDEX before ending substantive sessions.
+   - Irreversible forks: ADR in `docs/decisions/` per `documentation-and-adrs`.
+   ```
+
+4. **Add `craft.project.yaml` in project root:**
+   ```yaml
+   craft_version: "0.2.3"
+   profiles:
+     - engineering
+     - saas
+   ledger_path: docs/engineering-ledger
+   adr_path: docs/decisions
+   manifest_ref: DTiapan/craft craft.manifest.yaml
+   ```
+
+---
+
+## 🧭 Craft-Native Core Skills
+
+Craft ships with 4 specialized native skills located in `skills/` (and copied into `.agents/skills/` on init):
+
+| Skill | Role & Trigger |
+|---|---|
+| **[using-craft](skills/using-craft/SKILL.md)** | **The Router.** Maps current lifecycle phase to exactly one upstream skill. Enforces anti-drift rules. |
+| **[engineering-ledger](skills/engineering-ledger/SKILL.md)** | **The Memory.** Manages running project memory: Attack Plans (AP), Decision Records (DR), and Lessons Learned (LL). |
+| **[craft-adopt](skills/craft-adopt/SKILL.md)** | **The Bootstrapper.** 1-click adoption of Craft into any greenfield or brownfield repository. |
+| **[craft-promote](skills/craft-promote/SKILL.md)** | **The Skill Forge.** Promotes high-value, universal lessons learned (`Scope: universal`) into reusable Craft-native skills. |
+
+---
+
+## 🏛️ Dependency Strategy: Reference, Don't Copy
+
+Craft enforces a strict **"Reference, Don't Copy"** philosophy:
+- Upstream skill bodies are **never vendored** into Craft or target git repositories.
+- Upstream packages are pinned in [craft.manifest.yaml](craft.manifest.yaml).
+- Router tables in `using-craft` refer to upstream skills by name.
+- When upstream skills are updated by their maintainers, simply run:
+  ```bash
+  npx skills update addyosmani/agent-skills
+  npx skills update proyecto26/system-design-skills
+  ```
+
+---
+
+## 📚 Documentation Index
+
+| Document | Purpose |
+|---|---|
+| [lifecycle-map.md](docs/lifecycle-map.md) | Comprehensive end-to-end lifecycle phases, phase gates, and anti-drift contracts |
+| [landscape-audit.md](docs/landscape-audit.md) | Exhaustive map of upstream capabilities vs. what Craft uniquely owns |
+| [adoption.md](docs/adoption.md) | Detailed walkthrough for onboarding brownfield and greenfield repositories |
+| [case-study-recall.md](docs/case-study-recall.md) | Real-world dogfooding case study on Recall (Enterprise RAG engine) |
+
+---
+
+## 🌐 Part of the Three-Repo Stack
+
+Craft is the **workflow and memory layer** within a specialized AI engineering ecosystem:
+
+| Project | Role | Description |
+|---|---|---|
+| **[Recall](https://github.com/DTiapan/Recall)** | **Anchor Product** | Production Enterprise RAG engine with BEIR benchmarked retrieval. |
+| **Craft** (this repo) | **Workflow & Router** | Lifecycle phase router and engineering ledger; orchestrates upstream skills without copying. |
+| **[Battery](https://github.com/DTiapan/battery)** | **MCP Memory** | Local Model Context Protocol (MCP) server for cross-session persistent memory across agent sessions. |
 
 ---
 
 ## Author
 
-**Ajas Bakran** — AI systems engineer focused on agent evaluation, context engineering, and production reliability.
+**Ajas Bakran** — AI Systems Engineer focused on Agent Evaluation, Context Engineering, and Production Reliability.
 
-- GitHub: [github.com/DTiapan](https://github.com/DTiapan)
-- LinkedIn: [linkedin.com/in/ajasbakran](https://linkedin.com/in/ajasbakran)
-- Newsletter: [growithai.substack.com](https://growithai.substack.com/)
-
-Advisory and consulting on AI agent reliability, memory architectures, MCP integrations, and production RAG — [get in touch](mailto:bakran.ajas@gmail.com).
+- **GitHub**: [@DTiapan](https://github.com/DTiapan)
+- **LinkedIn**: [linkedin.com/in/ajasbakran](https://linkedin.com/in/ajasbakran)
+- **Substack**: [growithai.substack.com](https://growithai.substack.com/)
+- **Contact**: [bakran.ajas@gmail.com](mailto:bakran.ajas@gmail.com)
 
 ---
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT © [Ajas Bakran](LICENSE)

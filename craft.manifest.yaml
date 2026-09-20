@@ -121,7 +121,6 @@ dependencies:
     local_paths:
       - ".agents/skills"
       - "~/.agents/skills"
-      - "~/.cursor/skills"
     skills:
       - interview-me
       - idea-refine
@@ -150,7 +149,6 @@ dependencies:
     local_paths:
       - ".agents/skills"
       - "~/.agents/skills"
-      - "~/.cursor/skills"
     skills:
       - system-design
       - api-design

@@ -51,18 +51,15 @@ Skip process skills for:
 
 Search in order:
 
-1. `.agents/skills/<name>/SKILL.md` (project-local, from `npx skills add` in project root)
-2. `~/.agents/skills/<name>/SKILL.md`
-3. `~/.cursor/skills/<name>/SKILL.md`
-4. Superpowers plugin cache (optional skills only)
+1. `.agents/skills/<name>/SKILL.md` (project-local, from `craft-install.sh` in project root)
+2. `~/.agents/skills/<name>/SKILL.md` (user-global fallback)
+3. Superpowers plugin cache (optional skills only)
 
 If missing:
 
 ```bash
 cd /path/to/your/project
-npx skills add addyosmani/agent-skills
-ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/
-bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh
+bash /path/to/craft/scripts/craft-install.sh --profile all
 ```
 
 ---
@@ -139,15 +136,16 @@ Every Craft-native skill must define:
 
 ---
 
-## Install (once per machine)
+## Initialize Craft in a Project
+
+Like `git init`, initialize Craft directly in your target project repository:
 
 ```bash
-npx skills add addyosmani/agent-skills
-git clone git@github.com:DTiapan/craft.git ~/.cursor/skills/craft
-ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/
+cd /path/to/your/project
+bash /path/to/craft/scripts/craft-install.sh --profile all
 ```
 
-Per project: run **craft-adopt** skill.
+All skills and ledger templates will reside self-contained inside `.agents/skills/` and `docs/engineering-ledger/` in that project.
 
 ---
 

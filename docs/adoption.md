@@ -1,30 +1,51 @@
 # Adopting Craft in a Project
 
-Prefer the **craft-adopt** skill for a guided workflow. Manual steps below match the same outcome.
+Like `git init`, Craft initializes all skills and ledger artifacts directly inside your project repository. All skills reside self-contained in `.agents/skills/` without requiring global folders or IDE-specific directories.
 
-## Prerequisites (machine-level)
+## Quick Start (Automated 1-Click Init)
+
+Run the installer directly pointing to your target project:
 
 ```bash
-npx skills add addyosmani/agent-skills
-git clone git@github.com:DTiapan/craft.git ~/.cursor/skills/craft
-ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/
-bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh
+# Initialize Craft in target project with all skills
+bash /path/to/craft/scripts/craft-install.sh --profile all --project-dir /path/to/your/project
+
+# Or from inside the project root:
+bash /path/to/craft/scripts/craft-install.sh --profile all
 ```
 
-Craft **does not** copy Addy skills into your project repo.
+This single command:
+1. Installs upstream skills for the selected profile into `$TARGET/.agents/skills/`
+2. Installs Craft-native skills (`using-craft`, `engineering-ledger`, `craft-adopt`, `craft-promote`) into `$TARGET/.agents/skills/`
+3. Scaffolds `docs/engineering-ledger/` and `docs/decisions/` with templates
+4. Generates `craft.project.yaml` configured for the project
+5. Configures or appends Craft instructions to `AGENTS.md`
+6. Runs dependency verification
 
-## 1. Scaffold the ledger
+---
 
+## Manual Step-by-Step Setup
+
+If you prefer to configure manually:
+
+### 1. Install Skills into Project
 ```bash
-CRAFT=~/.cursor/skills/craft
+cd /path/to/your/project
+mkdir -p .agents/skills
+npx skills add addyosmani/agent-skills
+cp -R /path/to/craft/skills/* .agents/skills/
+```
+
+### 2. Scaffold the Ledger
+```bash
+CRAFT=/path/to/craft
 TARGET=/path/to/your/project
 
 mkdir -p "$TARGET/docs/engineering-ledger" "$TARGET/docs/decisions"
 cp "$CRAFT/skills/engineering-ledger/templates/"* "$TARGET/docs/engineering-ledger/"
 ```
 
-## 2. Wire AGENTS.md
-
+### 3. Wire AGENTS.md
 Append to project `AGENTS.md`:
 
 ```markdown
@@ -36,34 +57,37 @@ Append to project `AGENTS.md`:
 - Irreversible forks: ADR in `docs/decisions/` per `documentation-and-adrs`.
 ```
 
-## 3. Optional project pointer
-
+### 4. Add Project Pointer (`craft.project.yaml`)
 ```yaml
-# craft.project.yaml
-craft_version: "0.1.0"
+craft_version: "0.2.3"
+profiles:
+  - all
 ledger_path: docs/engineering-ledger
 adr_path: docs/decisions
 manifest_ref: DTiapan/craft craft.manifest.yaml
 ```
 
-## Artifact separation
+---
+
+## Artifact Separation
 
 | Artifact | When |
 |----------|------|
 | `docs/decisions/00xx-*.md` (ADR) | Irreversible architecture fork |
 | `docs/engineering-ledger/decisions.md` (DR-###) | Tactical, reversible choices |
-| `docs/engineering-ledger/lessons.md` (LL-###) | Lessons; tag `Scope: project \| universal` |
+| `docs/engineering-ledger/lessons.md` (LL-###) | Lessons; tag `Scope: project | universal` |
 
 Promote DR → ADR when reversal cost is high. Promote universal LL → Craft skill via **craft-promote**.
 
-## Session ritual
+## Session Ritual
 
 **Start:** Read INDEX → active AP → route via `using-craft` → read one upstream skill.  
 **End:** Append DR/LL → update phases if gate cleared → update INDEX.
 
-## Refresh upstream skills
+## Refresh Upstream Skills
 
 ```bash
+cd /path/to/your/project
 npx skills update addyosmani/agent-skills
-bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh
+bash /path/to/craft/skills/craft-adopt/scripts/verify-deps.sh .
 ```

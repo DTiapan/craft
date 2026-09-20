@@ -9,8 +9,8 @@ if [[ -z "$QUERY" ]]; then
 fi
 
 search_paths=(
+  ".agents/skills"
   "${HOME}/.agents/skills"
-  "${HOME}/.cursor/skills"
 )
 
 echo "Searching for duplicates matching: $QUERY"

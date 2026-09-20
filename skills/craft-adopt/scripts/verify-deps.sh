@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Verify Craft setup: manifest, Addy core skills, Craft-native skills.
 # Exit 0 = ready; exit 1 = fix instructions printed.
-# Compatible with macOS bash 3.2+
 set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CRAFT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 MANIFEST="$CRAFT_ROOT/craft.manifest.yaml"
+PROJECT_DIR="${1:-$(pwd)}"
 
 expand_path() {
   local p="$1"
@@ -19,10 +19,14 @@ expand_path() {
 
 build_search_paths() {
   SEARCH_PATHS=()
-  SEARCH_PATHS+=("$(expand_path "$HOME/.agents/skills")")
-  SEARCH_PATHS+=("$(expand_path "$HOME/.cursor/skills")")
+  if [[ -d "$PROJECT_DIR/.agents/skills" ]]; then
+    SEARCH_PATHS+=("$(expand_path "$PROJECT_DIR/.agents/skills")")
+  fi
   if [[ -d ".agents/skills" ]]; then
     SEARCH_PATHS+=("$(expand_path ".agents/skills")")
+  fi
+  if [[ -d "$HOME/.agents/skills" ]]; then
+    SEARCH_PATHS+=("$(expand_path "$HOME/.agents/skills")")
   fi
 }
 
@@ -55,7 +59,7 @@ if [[ ! -f "$MANIFEST" ]]; then
   echo "  $MANIFEST"
   echo ""
   echo "Clone Craft first:"
-  echo "  git clone git@github.com:DTiapan/craft.git ~/.cursor/skills/craft"
+  echo "  git clone git@github.com:DTiapan/craft.git"
   exit 1
 fi
 
@@ -63,6 +67,7 @@ build_search_paths
 
 echo "Craft dependency check (reference-only)"
 echo "Manifest: $MANIFEST"
+echo "Target:   $PROJECT_DIR"
 echo "Search paths:"
 printf '  - %s\n' "${SEARCH_PATHS[@]}"
 echo ""
@@ -96,7 +101,7 @@ failed=0
 if ((${#missing_craft[@]})); then
   echo "ERROR: Craft repo is incomplete (missing native skills):"
   printf '  - %s\n' "${missing_craft[@]}"
-  echo "  Re-clone: git clone git@github.com:DTiapan/craft.git ~/.cursor/skills/craft"
+  echo "  Re-clone Craft: git clone git@github.com:DTiapan/craft.git"
   failed=1
 fi
 
@@ -104,15 +109,11 @@ if ((${#missing[@]})); then
   echo "ERROR: Missing required Addy skills (${#missing[@]}):"
   printf '  - %s\n' "${missing[@]}"
   echo ""
-  echo "Fix (run from your project root, e.g. Recall):"
-  echo "  cd /path/to/your/project"
-  echo "  npx skills add addyosmani/agent-skills"
-  echo ""
-  echo "Then symlink Craft skills:"
-  echo "  ln -sf ~/.cursor/skills/craft/skills/* ~/.cursor/skills/"
+  echo "Fix (initialize in your project root):"
+  echo "  bash $CRAFT_ROOT/scripts/craft-install.sh --profile all --project-dir $PROJECT_DIR"
   echo ""
   echo "Re-run:"
-  echo "  bash ~/.cursor/skills/craft/skills/craft-adopt/scripts/verify-deps.sh"
+  echo "  bash $CRAFT_ROOT/skills/craft-adopt/scripts/verify-deps.sh $PROJECT_DIR"
   failed=1
 fi
 

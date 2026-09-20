@@ -65,14 +65,14 @@ bash scripts/craft-install.sh --profile saas
 Or verify existing dependencies:
 
 ```bash
-bash skills/craft-adopt/scripts/verify-deps.sh
+bash $CRAFT/skills/craft-adopt/scripts/verify-deps.sh
 ```
 
 ### 2. Scaffold ledger in target project
 
 ```bash
 TARGET=/path/to/project
-CRAFT=~/.cursor/skills/craft   # or local clone path
+CRAFT=/path/to/craft   # local clone path
 
 mkdir -p "$TARGET/docs/engineering-ledger"
 mkdir -p "$TARGET/docs/decisions"

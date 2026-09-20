@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Craft 1-Click Skill Installer & Dynamic Domain Profile Setup
 # Usage:
-#   bash scripts/craft-install.sh [--profile <global|saas|engineering|product|uiux|marketing|seo|all>] [--fetch <query>]
+#   bash scripts/craft-install.sh [--profile <global|saas|engineering|product|uiux|marketing|seo|all>] [--project-dir <dir>] [--fetch <query>]
 set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -43,20 +43,25 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Resolve absolute path for PROJECT_DIR
+PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"
+
 echo "=================================================================="
-echo "Craft 1-Click Domain Skill Installer & System Design Engine v0.2.3"
+echo "Craft 1-Click Domain Skill Installer & Project Initializer v0.2.3"
 echo "Target Profile: $PROFILE"
 echo "Project Dir:    $PROJECT_DIR"
 echo "Craft Root:     $CRAFT_ROOT"
 echo "=================================================================="
 echo ""
 
+# Ensure .agents/skills directory exists in target project
+mkdir -p "$PROJECT_DIR/.agents/skills"
+
 # Helper: Install standard Addy agent-skills pack
 install_addy_skills() {
   echo "--> [Profile: Core] Installing agent-skills (addyosmani/agent-skills)..."
   ( cd "$PROJECT_DIR" && npx --yes skills add addyosmani/agent-skills ) || {
     echo "  [Fallback] Attempting git clone fallback for addyosmani/agent-skills..."
-    mkdir -p "$PROJECT_DIR/.agents/skills"
     git clone https://github.com/addyosmani/agent-skills.git "$PROJECT_DIR/.agents/skills/addy-pack" || true
   }
 }
@@ -66,7 +71,6 @@ install_system_design_skills() {
   echo "--> [Profile: System Design] Installing System Design skill pack (proyecto26/system-design-skills)..."
   ( cd "$PROJECT_DIR" && npx --yes skills add proyecto26/system-design-skills -y ) || {
     echo "  [Fallback] Attempting git clone fallback for proyecto26/system-design-skills..."
-    mkdir -p "$PROJECT_DIR/.agents/skills"
     git clone https://github.com/proyecto26/system-design-skills.git "$PROJECT_DIR/.agents/skills/system-design-pack" || true
   }
 }
@@ -86,7 +90,6 @@ fetch_online_skill() {
   else
     echo "  ! Could not auto-install '$query' via npx. Trying git fallback..."
     if [[ "$query" == *"/"* ]]; then
-      mkdir -p "$PROJECT_DIR/.agents/skills"
       git clone "https://github.com/${query}.git" "$PROJECT_DIR/.agents/skills/$(basename "$query")" || true
     fi
   fi
@@ -135,21 +138,76 @@ if [[ -n "$CUSTOM_FETCH" ]]; then
   fetch_online_skill "$CUSTOM_FETCH"
 fi
 
-# Wire Craft native skills into user skill directory (~/.cursor/skills)
+# Install Craft native skills directly into project .agents/skills/
 echo ""
-echo "--> Wiring Craft native skills (using-craft, engineering-ledger, craft-adopt, craft-promote)..."
-mkdir -p "$HOME/.cursor/skills"
+echo "--> Installing Craft native skills into project .agents/skills/..."
 for skill in "$CRAFT_ROOT/skills"/*; do
   if [[ -d "$skill" ]]; then
     base=$(basename "$skill")
-    ln -sf "$skill" "$HOME/.cursor/skills/$base"
+    dest="$PROJECT_DIR/.agents/skills/$base"
+    if [[ "$skill" != "$dest" ]]; then
+      cp -R "$skill" "$PROJECT_DIR/.agents/skills/"
+      echo "  + Installed skill: $base"
+    fi
   fi
 done
 
+# Initialize project ledger artifacts if missing (like git init)
+echo ""
+echo "--> Initializing Craft project artifacts in $PROJECT_DIR..."
+if [[ ! -d "$PROJECT_DIR/docs/engineering-ledger" ]]; then
+  echo "  + Scaffolding docs/engineering-ledger/ and docs/decisions/..."
+  mkdir -p "$PROJECT_DIR/docs/engineering-ledger" "$PROJECT_DIR/docs/decisions"
+  cp -R "$CRAFT_ROOT/skills/engineering-ledger/templates/"* "$PROJECT_DIR/docs/engineering-ledger/"
+else
+  echo "  ✓ Existing docs/engineering-ledger found."
+fi
+
+if [[ ! -f "$PROJECT_DIR/craft.project.yaml" ]]; then
+  echo "  + Creating craft.project.yaml..."
+  cat << EOF > "$PROJECT_DIR/craft.project.yaml"
+craft_version: "0.2.3"
+profiles:
+  - ${PROFILE}
+ledger_path: docs/engineering-ledger
+adr_path: docs/decisions
+manifest_ref: DTiapan/craft craft.manifest.yaml
+EOF
+else
+  echo "  ✓ Existing craft.project.yaml found."
+fi
+
+if [[ ! -f "$PROJECT_DIR/AGENTS.md" ]]; then
+  echo "  + Creating AGENTS.md with Craft instructions..."
+  cat << 'EOF' > "$PROJECT_DIR/AGENTS.md"
+# AGENTS.md
+
+## Craft (orchestration + ledger)
+
+- Non-trivial work: read `docs/engineering-ledger/INDEX.md` first.
+- Route phases via `using-craft` skill (reference-only — do not copy Addy skills into this repo).
+- Append DR/LL/INDEX before ending substantive sessions.
+- Irreversible forks: ADR in `docs/decisions/` per `documentation-and-adrs`.
+EOF
+elif ! grep -q "## Craft" "$PROJECT_DIR/AGENTS.md"; then
+  echo "  + Appending Craft instructions to AGENTS.md..."
+  cat << 'EOF' >> "$PROJECT_DIR/AGENTS.md"
+
+## Craft (orchestration + ledger)
+
+- Non-trivial work: read `docs/engineering-ledger/INDEX.md` first.
+- Route phases via `using-craft` skill (reference-only — do not copy Addy skills into this repo).
+- Append DR/LL/INDEX before ending substantive sessions.
+- Irreversible forks: ADR in `docs/decisions/` per `documentation-and-adrs`.
+EOF
+else
+  echo "  ✓ Craft section already present in AGENTS.md."
+fi
+
 # Run dependency verification gate
 echo ""
-echo "--> Verifying installation..."
-bash "$CRAFT_ROOT/skills/craft-adopt/scripts/verify-deps.sh"
+echo "--> Verifying project installation..."
+bash "$CRAFT_ROOT/skills/craft-adopt/scripts/verify-deps.sh" "$PROJECT_DIR"
 
 echo ""
-echo "✓ Craft skill profile '$PROFILE' successfully installed and verified!"
+echo "✓ Craft skill profile '$PROFILE' successfully initialized in $PROJECT_DIR!"
