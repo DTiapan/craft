@@ -1,84 +1,99 @@
-# Lifecycle map — Craft end-to-end flow
+# Lifecycle Map — Craft End-to-End Flow & Anti-Drift Gates
 
-Single source of truth for phase gates, skill routing, and ledger touchpoints.
+Single source of truth for phase gates, transition thresholds, skill routing, and ledger touchpoints.
 
 ---
 
-## Phase flow
+## Phase Flow
 
 ```
-Shape → Spec/ADR → Plan → Build → Verify → Review → Ship
-         ↑__________________ledger read/write every session______________|
+Shape → Spec/PRD → Architecture → Plan → Build → Verify → Review → Ship
+  ↑________________________ledger read/write every session________________________|
 ```
 
-| Phase | Entry | Exit gate (evidence) | Primary skill | Ledger action |
-|-------|-------|------------------------|---------------|---------------|
-| **Shape** | Idea or ticket | AP written; problem + non-goals in INDEX | `interview-me` or `idea-refine` | Create AP-### |
-| **Spec** | Shape done | SPEC.md or scoped spec section exists | `spec-driven-development` | DR-### for tactical forks |
-| **ADR** | Irreversible fork identified | ADR in `docs/decisions/` | `documentation-and-adrs` | Link DR → ADR |
-| **Plan** | Spec/ADR for slice | Task list with order + done-when | `planning-and-task-breakdown` | AP links to tasks |
-| **Build** | Plan for slice | Tests green for touched modules | `incremental-implementation` + `test-driven-development` | Update AP status |
-| **Debug** | Unexpected failure | Root cause found | `debugging-and-error-recovery` or `diagnose` | LL-### mandatory |
-| **Verify** | Build done | Benchmark/smoke/constraint evidence | `constraint-driven-development` | Update `phases.md` |
-| **Review** | Verify done | Review checklist complete | `code-review-and-quality` | INDEX session block |
-| **Ship** | Review done | CI green; rollback noted | `shipping-and-launch` | INDEX close + phase done |
-
-**Domain overlays** (replace primary for that work only):
-
-| Work type | Skill |
-|-----------|-------|
-| UI | `frontend-ui-engineering` |
-| Auth / secrets | `security-and-hardening` |
-| API design | `api-and-interface-design` |
-| Performance | `performance-optimization` |
+| Phase | Entry Condition | Exit Gate Threshold (Evidence) | Primary Skill | Ledger Action |
+|---|---|---|---|---|
+| **0. Shape** | Idea or feature ask | `northstar.md` Market Validation Score $\ge 7/10$; `AP-###` logged | `product-management` / `interview-me` / `idea-refine` | Create AP-### in `attack-plans.md` |
+| **1. Spec / PRD** | Shape gate cleared | `docs/PRD.md` with Gherkin acceptance criteria + schema definitions | `product-management` / `spec-driven-development` | Log tactical choices as DR-### |
+| **2. Architecture** | Spec gate cleared | Component topology diagram + failure modes + datastore decisions | `system-design` / `api-design` / `architecture-diagram` | Author ADR in `docs/decisions/` if irreversible |
+| **3. Plan** | Spec/Arch cleared | Ordered thin-slice task list with automated "Done When" conditions | `planning-and-task-breakdown` | Link AP-### to task list |
+| **4. Build (TDD)** | Plan gate cleared | Red-Green-Refactor loop; 100% tests green; zero placeholder stubs | `incremental-implementation` + `test-driven-development` | Update AP-### progress |
+| **5. Debug** | Unexpected error | Root cause isolated and fixed with regression test | `debugging-and-error-recovery` | **Mandatory** LL-### logged |
+| **6. Verify** | Build gate cleared | Automated test suite passes; numeric benchmark constraints satisfied | `constraint-driven-development` | Mark gate in `phases.md` |
+| **7. Review** | Verify gate cleared | Multi-axis code review passed; security audit clean; zero linter warnings | `code-review-and-quality` + `security-and-hardening` | Update session in `INDEX.md` |
+| **8. Ship** | Review gate cleared | Clean production build; rollback strategy recorded in `INDEX.md` | `shipping-and-launch` | Mark phase completed |
 
 ---
 
-## Anti-drift rules
+## Phase Transition Threshold Matrix (Anti-Drift Gates)
 
-1. **Skip all process skills** for: greetings, single-file lookups, config questions, one-line answers.
-2. **One process skill per turn/phase** — never stack `interview-me` + `spec-driven-development` + `implement`.
-3. **User slash wins** — `/grill-me`, `/implement`, etc. override router table.
-4. **Read ledger first** on non-trivial work — `engineering-ledger` read loop before loading phase skill.
-5. **Write ledger last** — DR/LL/INDEX before ending session.
-6. **Never copy upstream skills** into Craft — resolve via [craft.manifest.yaml](../craft.manifest.yaml).
+An agent or developer is **BLOCKED** from transitioning to the next phase unless the current phase threshold is satisfied:
 
----
-
-## Lesson scope taxonomy
-
-| Scope | Where | Next step |
-|-------|-------|-----------|
-| `project` | `docs/engineering-ledger/lessons.md` | Stays in repo |
-| `universal` | Same file, tagged | `craft-promote` after 2nd project or user request |
-| Promoted | `craft/skills/<name>/` | Link back to LL-### ids |
-
-See [promotion-criteria.md](../skills/engineering-ledger/references/promotion-criteria.md).
-
----
-
-## Dependency resolution
-
-```mermaid
-flowchart TD
-  Start[NonTrivialWork] --> ReadLedger[engineering-ledger read]
-  ReadLedger --> Router[using-craft phase pick]
-  Router --> Resolve{Skill installed?}
-  Resolve -->|yes| ReadSkill[Read upstream SKILL.md]
-  Resolve -->|no| Install[npx skills add per manifest]
-  Install --> ReadSkill
-  ReadSkill --> Execute[Follow skill workflow]
-  Execute --> WriteLedger[engineering-ledger write]
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 0. SHAPE THRESHOLD: Market Validation Score >= 7/10                         │
+│    docs/northstar.md filled. If score < 7, DO NOT BUILD. Pivot or abandon.  │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (Cleared)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 1. SPEC THRESHOLD: Testable Functional Requirements & Schemas               │
+│    docs/PRD.md with Given-When-Then acceptance criteria & data types.       │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (Cleared)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2. ARCHITECTURE THRESHOLD: Failure Modes & Data Flow Mapped                 │
+│    Component diagram + resilience strategies. Irreversible forks -> ADR.    │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (Cleared)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 3. PLAN THRESHOLD: Thin Slices with Automated "Done When" Conditions        │
+│    1-2 files per slice. Explicit verification commands per task.            │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (Cleared)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4. BUILD THRESHOLD: 100% Passing Tests & Zero Placeholders                  │
+│    Test-driven execution. No stubbed mock data in production paths.         │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (Cleared)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 5. VERIFY THRESHOLD: Numeric Constraints & Quality Bar Met                  │
+│    Benchmark latency, throughput, coverage, and error thresholds verified.  │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (Cleared)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 6. REVIEW & SHIP: Security Audit, Clean Build & Rollback Plan               │
+│    OWASP passed, DR/LL logged, production bundle ready to deploy.           │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Superpowers (optional delegates)
+## Domain Skill Overlays
 
-| Trigger | Skill |
-|---------|-------|
-| Greenfield creative exploration | `brainstorming` |
-| Stuck bug, unknown layer | `systematic-debugging` |
-| About to claim complete | `verification-before-completion` |
+Use these specialized domain skills when executing tasks within their area:
 
-Use **instead of** stacking Addy skills — not in addition to primary phase skill.
+| Work Area | Skill |
+|---|---|
+| Product & PRD Authoring | `product-management` |
+| UI & Modern Layout | `ui-ux-pro-max` + `frontend-ui-engineering` |
+| Security & Secrets | `security-and-hardening` |
+| API Contracts & Interface | `api-design` + `api-and-interface-design` |
+| Distributed Architecture | `system-design`, `caching`, `resilience-failure`, `data-storage` |
+| Performance Profiling | `performance-optimization` |
+| CI/CD Pipeline | `ci-cd-and-automation` |
+
+---
+
+## Anti-Drift Operating Rules
+
+1. **Verify Phase Thresholds Before Moving**: Never mark a phase done or load the next phase skill without meeting the exit gate criteria in `phases.md`.
+2. **One Process Skill Per Phase**: Never stack multiple workflow skills simultaneously (e.g. do not load `interview-me` + `spec-driven-development` + `incremental-implementation`).
+3. **Read Ledger First**: Check `docs/engineering-ledger/INDEX.md` and active phase in `phases.md` before taking non-trivial action.
+4. **Write Ledger Last**: Append decisions (`DR-###`), lessons (`LL-###`), and session summary to `INDEX.md` before finishing.
+5. **No Placeholders in Build**: Build phase is incomplete if stubs or fake placeholders exist.

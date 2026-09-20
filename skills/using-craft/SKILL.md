@@ -17,10 +17,11 @@ Full lifecycle map: [docs/lifecycle-map.md](../../docs/lifecycle-map.md)
 
 ## Before anything else (non-trivial work)
 
-1. **Read ledger** — follow `engineering-ledger` read loop (`docs/engineering-ledger/INDEX.md` in target project).
-2. **Identify phase** — Shape | Spec | ADR | Plan | Build | Debug | Verify | Review | Ship.
-3. **Load exactly one primary skill** from table below (read full SKILL.md from disk).
-4. **End session** — `engineering-ledger` write loop.
+1. **Read ledger** — follow `engineering-ledger` read loop (`docs/engineering-ledger/INDEX.md` and `phases.md` in target project).
+2. **Verify Phase Transition Threshold** — confirm the current phase's exit criteria gate is satisfied before advancing to the next phase. (If in Shape, ensure `docs/northstar.md` market score >= 7/10).
+3. **Identify phase** — Shape | Spec | Architecture | Plan | Build | Debug | Verify | Review | Ship.
+4. **Load exactly one primary skill** from table below (read full SKILL.md from disk).
+5. **End session** — `engineering-ledger` write loop (update DR, LL, phases, and INDEX).
 
 ---
 
@@ -40,6 +41,8 @@ Skip process skills for:
 | Rule | Detail |
 |------|--------|
 | One skill per phase | Never stack `interview-me` + `spec-driven-development` + `implement` |
+| Gate threshold verification | Never advance active phase without meeting exit criteria in `phases.md` |
+| Market validation gate | `docs/northstar.md` score must be >= 7/10 to build. If < 7, stop or pivot |
 | User slash wins | `/grill-me`, `/implement`, project AGENTS.md overrides win |
 | No skill hoarding | Do not read Superpowers `using-superpowers` "1% chance" behavior |
 | Reference only | Never copy upstream SKILL.md into Craft or project repos |
@@ -68,8 +71,8 @@ bash /path/to/craft/scripts/craft-install.sh --profile all
 
 | Phase | Primary skill | Pack | Optional ledger |
 |-------|---------------|------|-----------------|
-| Shape | `interview-me` if underspecified; else `idea-refine` | Addy | Create AP-### |
-| Spec | `spec-driven-development` | Addy | DR-### for forks |
+| Shape | `product-management`, `interview-me`, or `idea-refine` | Craft/Addy | Create AP-### & `northstar.md` |
+| Spec | `product-management` (PRD) or `spec-driven-development` | Craft/Addy | DR-### for forks |
 | ADR | `documentation-and-adrs` | Addy | Link DR ↔ ADR |
 | Plan | `planning-and-task-breakdown` | Addy | AP ↔ tasks |
 | Build | `incremental-implementation` | Addy | Update AP status; use for plan tickets too |
@@ -106,6 +109,7 @@ bash /path/to/craft/scripts/craft-install.sh --profile all
 | Skill | When |
 |-------|------|
 | **engineering-ledger** | Every non-trivial session (read + write) |
+| **product-management** | PRD authoring, RICE prioritization, JTBD, telemetry |
 | **using-craft** | Routing, adding skills, structure questions |
 | **craft-adopt** | Bootstrap Craft into a new project |
 | **craft-promote** | Universal LL → new Craft skill |

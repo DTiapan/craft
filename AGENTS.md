@@ -37,4 +37,6 @@ When adding or refining skills, read `using-craft` first.
   - *Verification & Quality*: Load `constraint-driven-development` and `code-review-and-quality` before completing features.
   - *UI / Frontend*: Load `ui-ux-pro-max` and `frontend-ui-engineering`.
 - **Anti-Drift**: Use the single best skill for the active phase (via `using-craft`). Never bypass skills or invent ad-hoc processes when an established skill exists.
+- **Phase Transition Thresholds**: Never jump phases without satisfying the previous phase's exit gate evidence in `phases.md`. Anti-drift thresholds must be verified before proceeding to prevent premature implementation.
+- **Market Validation Gate**: In `docs/northstar.md`, evaluate the Market Validation Score (0–10). A score of >= 7/10 is required to enter `Build`. If < 7, stop or pivot.
 - **Durable Ledger Updates**: Append tactical decisions (`DR-###`) and lessons (`LL-###`) to `docs/engineering-ledger/`, and update `INDEX.md` before ending substantive sessions.

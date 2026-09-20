@@ -65,8 +65,10 @@ profiles:
     name: "Product Strategy & Discovery"
     description: "Skills for 0 to 1 product discovery, PRDs, user interviews, and capability mapping"
     sources:
+      - craft_native
       - addyosmani/agent-skills
     skills:
+      - product-management
       - idea-refine
       - interview-me
       - spec-driven-development
@@ -181,3 +183,4 @@ craft_native:
   - engineering-ledger
   - craft-adopt
   - craft-promote
+  - product-management

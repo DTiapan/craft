@@ -29,6 +29,8 @@ check "using-craft SKILL.md" test -f "$CRAFT_ROOT/skills/using-craft/SKILL.md"
 check "engineering-ledger SKILL.md" test -f "$CRAFT_ROOT/skills/engineering-ledger/SKILL.md"
 check "craft-adopt SKILL.md" test -f "$CRAFT_ROOT/skills/craft-adopt/SKILL.md"
 check "craft-promote SKILL.md" test -f "$CRAFT_ROOT/skills/craft-promote/SKILL.md"
+check "product-management SKILL.md" test -f "$CRAFT_ROOT/skills/product-management/SKILL.md"
+check "northstar template" test -f "$CRAFT_ROOT/skills/engineering-ledger/templates/northstar.md"
 check "lifecycle-map doc" test -f "$CRAFT_ROOT/docs/lifecycle-map.md"
 check "verify-deps executable" test -x "$CRAFT_ROOT/skills/craft-adopt/scripts/verify-deps.sh"
 

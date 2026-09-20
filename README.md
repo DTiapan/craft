@@ -100,8 +100,9 @@ bash ~/craft/scripts/smoke-test.sh
 
 ### 1. Session Initialization (Read Before Acting)
 - **Do not jump straight into modifying code for non-trivial tasks.**
-- Read `docs/engineering-ledger/INDEX.md` first.
-- Check `phases.md` to identify the current lifecycle phase (e.g., `Shape`, `Spec`, `Plan`, `Build`, `Debug`, `Verify`, `Review`, `Ship`).
+- Read `docs/engineering-ledger/INDEX.md` and `docs/northstar.md` first.
+- Verify the **Market Validation Score** in `docs/northstar.md` (must be >= 7/10 before entering `Build`).
+- Check `phases.md` to identify the current lifecycle phase and verify that previous phase exit criteria thresholds were cleared.
 - Scan `decisions.md` and `lessons.md` to understand existing architectural constraints and avoid repeating known pitfalls.
 
 ### 2. Phase Routing (The "One-Skill" Rule)
@@ -146,7 +147,7 @@ Craft curates upstream skills into targeted domain profiles configured in [craft
 | **`all`** | **Complete Suite** | Installs **all** skills across Addy, System Design wiki, and UI/UX Pro Max. Recommended for full-stack environments. |
 | **`engineering`** | Core Architecture & Backend | `proyecto26/system-design-skills` (System Design wiki, Caching, Consistency, Data Storage, Messaging, Distributed Search/Logging, Observability, Scaling) + `addyosmani/agent-skills` (TDD, Security, CI/CD, Git). |
 | **`saas`** | Commercial SaaS & Monetization | API Design, Multi-Tenancy, Auth Security, Frontend UI, Billing, Entitlements, UI/UX Pro Max, Shipping & Launch. |
-| **`product`** | 0-to-1 Discovery & PRDs | Idea Refine, Interview Me, Spec-Driven Development, Task Breakdown, ADRs. |
+| **`product`** | 0-to-1 Discovery & PRDs | Product Management (PRDs, RICE, JTBD), Idea Refine, Interview Me, Spec-Driven Development, Task Breakdown, ADRs. |
 | **`uiux`** | Design Systems & Modern Frontend | UI/UX Pro Max, Frontend UI Engineering, Browser DevTools Testing, Modern Web Guidance. |
 | **`marketing`** | Growth & Launch Messaging | Shipping & Launch, Idea Refine, User Interviewing, Spec-Driven Dev. |
 | **`seo`** | Technical SEO & Performance | Performance Optimization, Modern Web Guidance, Browser Testing with DevTools. |
@@ -205,6 +206,8 @@ bash /path/to/craft/scripts/craft-install.sh --profile all --project-dir .
   - *Verification & Quality*: Load `constraint-driven-development` and `code-review-and-quality` before completing features.
   - *UI / Frontend*: Load `ui-ux-pro-max` and `frontend-ui-engineering`.
 - **Anti-Drift**: Use the single best skill for the active phase (via `using-craft`). Never bypass skills or invent ad-hoc processes when an established skill exists.
+- **Phase Transition Thresholds**: Never jump phases without satisfying the previous phase's exit gate evidence in `phases.md`. Anti-drift thresholds must be verified before proceeding to prevent premature implementation.
+- **Market Validation Gate**: In `docs/northstar.md`, evaluate the Market Validation Score (0–10). A score of >= 7/10 is required to enter `Build`. If < 7, stop or pivot.
 - **Durable Ledger Updates**: Append tactical decisions (`DR-###`) and lessons (`LL-###`) to `docs/engineering-ledger/`, and update `INDEX.md` before ending substantive sessions.
    ```
 
@@ -228,6 +231,7 @@ Craft ships with 4 specialized native skills located in `skills/` (and copied in
 | Skill | Role & Trigger |
 |---|---|
 | **[using-craft](skills/using-craft/SKILL.md)** | **The Router.** Maps current lifecycle phase to exactly one upstream skill. Enforces anti-drift rules. |
+| **[product-management](skills/product-management/SKILL.md)** | **The Product Forge.** Authors PRDs with Gherkin acceptance criteria, RICE prioritization, JTBD, and telemetry metrics. |
 | **[engineering-ledger](skills/engineering-ledger/SKILL.md)** | **The Memory.** Manages running project memory: Attack Plans (AP), Decision Records (DR), and Lessons Learned (LL). |
 | **[craft-adopt](skills/craft-adopt/SKILL.md)** | **The Bootstrapper.** 1-click adoption of Craft into any greenfield or brownfield repository. |
 | **[craft-promote](skills/craft-promote/SKILL.md)** | **The Skill Forge.** Promotes high-value, universal lessons learned (`Scope: universal`) into reusable Craft-native skills. |
